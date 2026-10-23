@@ -155,7 +155,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
       <div class="body">
         <p class="salute ink" style="--i:4" id="salute">Милостивый государь,</p>
         <p class="ink" style="--i:5">честь имею пригласить Вас на бал-маскарад в поместье Блэкторн, <span id="whenDate">1 ноября</span>.</p>
-        <p class="ink" style="--i:6">Съезд гостей — в <b id="whenG2">20:00</b>. В <b id="whenS2">21:00</b> двери запрут.</p>
+        <p class="ink" style="--i:6">Съезд гостей — в <b id="whenG2">13:00 по Москве</b>. В <b id="whenS2">14:00</b> двери запрут.</p>
         <p class="ink" style="--i:7">Явиться надлежит в маске. Своё лицо оставьте дома: здесь оно Вам не понадобится.</p>
         <p class="extra hidden ink" style="--i:8" id="extra"></p>
         <p class="ink" style="--i:9">Прошу не тревожиться, если в доме погаснет свет. Прислуга знает, что делать. Гостям же в подвал спускаться не следует. Хозяин просит отнестись к этой просьбе серьёзно.</p>
@@ -170,8 +170,8 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
     <section class="plain" id="plain">
       <h2>Если по-простому</h2>
       <div class="row"><span>Когда</span><span class="big" id="whenDay">воскресенье, 1 ноября</span></div>
-      <div class="row"><span>Сбор</span><span id="whenG">20:00</span></div>
-      <div class="row"><span>Старт игры</span><span id="whenS">21:00</span></div>
+      <div class="row"><span>Сбор</span><span id="whenG">13:00 по Москве</span></div>
+      <div class="row"><span>Старт игры</span><span id="whenS">14:00 по Москве</span></div>
       <div class="row"><span>По Хабаровску</span><span>сбор 20:00, старт 21:00</span></div>
       <div class="row"><span>Во что</span><span>Minecraft Java. Лицензия или пиратка — без разницы.</span></div>
       <div class="row"><span>Голос</span><span>Прямо в игре: слышно тех, кто рядом. Есть вебка — можно и с ней.</span></div>
@@ -190,8 +190,8 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
           <button class="choice" data-v="no" aria-pressed="false">Не смогу</button>
         </div>
         <div id="lateBox" class="hidden">
-          <label for="lateTime">Примерно во сколько (по твоему времени)?</label>
-          <input id="lateTime" placeholder="например, 18:30">
+          <label for="lateTime">Примерно во сколько (по Москве)?</label>
+          <input id="lateTime" placeholder="например, 15:00">
         </div>
         <div id="moreBox" class="hidden">
           <label for="nick">Ник в майне</label>
@@ -242,12 +242,13 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
 
   // время у гостя
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const fmt = (d, o) => d.toLocaleString("ru-RU", o);
+  // время всем одно: по Москве (часы на устройствах гостей врут)
+  const fmt = (d, o) => d.toLocaleString("ru-RU", Object.assign({timeZone:"Europe/Moscow"}, o));
   const hm = {hour:"2-digit", minute:"2-digit"};
   $("whenDay").textContent = fmt(START, {weekday:"long", day:"numeric", month:"long"});
-  $("whenG").textContent = fmt(GATHER, hm) + " по твоему времени";
-  $("whenS").textContent = fmt(START, hm) + " по твоему времени";
-  $("whenG2").textContent = fmt(GATHER, hm);
+  $("whenG").textContent = fmt(GATHER, hm) + " по Москве";
+  $("whenS").textContent = fmt(START, hm) + " по Москве";
+  $("whenG2").textContent = fmt(GATHER, hm) + " по Москве";
   $("whenS2").textContent = fmt(START, hm);
   $("whenDate").textContent = fmt(GATHER, {day:"numeric", month:"long"});
 
@@ -394,7 +395,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
   function answer() {
     const who = guest.s || "Гость";
     let t = "🎭 Маскарад 1.11 — " + who + "\n" + LABEL[choice];
-    if (choice === "late" && $("lateTime").value.trim()) t += " (примерно " + $("lateTime").value.trim() + ", " + tz + ")";
+    if (choice === "late" && $("lateTime").value.trim()) t += " (примерно " + $("lateTime").value.trim() + " МСК)";
     if (choice !== "no" && choice !== "maybe") {
       t += "\nНик: " + ($("nick").value.trim() || "—");
       t += "\nМайн: " + $("mc").value;
