@@ -154,7 +154,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
       <h1 class="ink" style="--i:2">Приглашение<br>на маскарад</h1>
       <div class="body">
         <p class="salute ink" style="--i:4" id="salute">Милостивый государь,</p>
-        <p class="ink" style="--i:5">честь имею пригласить Вас на бал-маскарад в поместье Блэкторн, <span id="whenDate">30 октября</span>.</p>
+        <p class="ink" style="--i:5">честь имею пригласить Вас на бал-маскарад в поместье Блэкторн, <span id="whenDate">1 ноября</span>.</p>
         <p class="ink" style="--i:6">Съезд гостей — в <b id="whenG2">20:00</b>. В <b id="whenS2">21:00</b> двери запрут.</p>
         <p class="ink" style="--i:7">Явиться надлежит в маске. Своё лицо оставьте дома: здесь оно Вам не понадобится.</p>
         <p class="extra hidden ink" style="--i:8" id="extra"></p>
@@ -169,7 +169,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
 
     <section class="plain" id="plain">
       <h2>Если по-простому</h2>
-      <div class="row"><span>Когда</span><span class="big" id="whenDay">пятница, 30 октября</span></div>
+      <div class="row"><span>Когда</span><span class="big" id="whenDay">воскресенье, 1 ноября</span></div>
       <div class="row"><span>Сбор</span><span id="whenG">20:00</span></div>
       <div class="row"><span>Старт игры</span><span id="whenS">21:00</span></div>
       <div class="row"><span>По Хабаровску</span><span>сбор 20:00, старт 21:00</span></div>
@@ -186,6 +186,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
         <div class="choices" role="group" aria-label="Придёшь?">
           <button class="choice" data-v="yes" aria-pressed="false">Буду с самого начала</button>
           <button class="choice" data-v="late" aria-pressed="false">Буду, но подключусь позже</button>
+          <button class="choice" data-v="maybe" aria-pressed="false">Пока не знаю, отвечу позже</button>
           <button class="choice" data-v="no" aria-pressed="false">Не смогу</button>
         </div>
         <div id="lateBox" class="hidden">
@@ -380,13 +381,13 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
 
   // ответ
   let choice = null;
-  const LABEL = {yes:"Буду с начала", late:"Буду, подключусь позже", no:"Не смогу"};
+  const LABEL = {yes:"Буду с начала", late:"Буду, подключусь позже", maybe:"Пока не знаю, отвечу позже", no:"Не смогу"};
   document.querySelectorAll(".choice").forEach(b => b.addEventListener("click", () => {
     document.querySelectorAll(".choice").forEach(x => x.setAttribute("aria-pressed", "false"));
     b.setAttribute("aria-pressed", "true");
     choice = b.dataset.v;
     $("lateBox").classList.toggle("hidden", choice !== "late");
-    $("moreBox").classList.toggle("hidden", choice === "no");
+    $("moreBox").classList.toggle("hidden", choice === "no" || choice === "maybe");
     $("send").disabled = false;
   }));
 
@@ -394,7 +395,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
     const who = guest.s || "Гость";
     let t = "🎭 Маскарад 1.11 — " + who + "\n" + LABEL[choice];
     if (choice === "late" && $("lateTime").value.trim()) t += " (примерно " + $("lateTime").value.trim() + ", " + tz + ")";
-    if (choice !== "no") {
+    if (choice !== "no" && choice !== "maybe") {
       t += "\nНик: " + ($("nick").value.trim() || "—");
       t += "\nМайн: " + $("mc").value;
     }
@@ -419,7 +420,8 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
     window.open("https://t.me/" + TG_USER + "?text=" + encodeURIComponent(answer()), "_blank");
     $("form").classList.add("hidden");
     $("done").classList.remove("hidden");
-    $("doneText").textContent = choice === "no" ? "Жаль. Свеча для Вас погаснет." : "Вы в списке гостей.";
+    $("doneText").textContent = choice === "no" ? "Жаль. Свеча для Вас погаснет."
+      : choice === "maybe" ? "Хозяин подождёт. Дайте знать до 27 октября." : "Вы в списке гостей.";
   });
 })();
 </script>
